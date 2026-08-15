@@ -10,13 +10,16 @@ import { money, dateLabel, dueText, TODAY } from '../lib/format'
 const STAGES = ['Lead', 'Application', 'Submitted', 'Approved', 'Settled']
 const STAGE_ORDER = { Lead: 0, Application: 1, Submitted: 2, Approved: 3, Settled: 4 }
 
+// Every column can shrink to nothing (minmax(0, …)) and long values ellipsis,
+// so the table always fits its card instead of forcing a sideways scroll.
 const ROW_GRID = {
   display: 'grid',
-  gridTemplateColumns:
-    'minmax(180px,1.6fr) minmax(96px,1fr) minmax(104px,1fr) minmax(104px,1fr) minmax(96px,1fr)',
-  gap: 12,
-  minWidth: 660,
+  gridTemplateColumns: 'minmax(0,1.7fr) minmax(0,0.85fr) minmax(0,1.1fr) minmax(0,0.95fr) minmax(0,1fr)',
+  gap: 10,
+  alignItems: 'center',
 }
+
+const CELL = { minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }
 
 export default function Clients({ selId, setSelId, openModal }) {
   const d = useData()
@@ -98,10 +101,10 @@ export default function Clients({ selId, setSelId, openModal }) {
       </div>
 
       <div style={grid(480)}>
-        <section style={{ ...card, padding: 0, overflowX: 'auto' }}>
+        <section style={{ ...card, padding: 0, overflow: 'hidden' }}>
           <div
             style={{
-              padding: '16px 18px',
+              padding: '13px 16px',
               display: 'flex',
               gap: 8,
               flexWrap: 'wrap',
@@ -153,18 +156,19 @@ export default function Clients({ selId, setSelId, openModal }) {
           <div
             style={{
               ...ROW_GRID,
-              padding: '13px 18px',
+              padding: '11px 16px',
               background: C.cardTint,
               borderBottom: `1px solid ${C.line}`,
               ...labelSm,
-              letterSpacing: '0.14em',
+              fontSize: 9,
+              letterSpacing: '0.12em',
             }}
           >
-            <div>Client · referrer</div>
-            <div>Loan</div>
-            <div>Bank</div>
-            <div>Stage</div>
-            <div>Key date</div>
+            <div style={CELL}>Client · referrer</div>
+            <div style={CELL}>Loan</div>
+            <div style={CELL}>Bank</div>
+            <div style={CELL}>Stage</div>
+            <div style={CELL}>Key date</div>
           </div>
 
           {shown.map((c) => (
@@ -173,53 +177,41 @@ export default function Clients({ selId, setSelId, openModal }) {
               {...clickable(() => setSelId(c.id), `Open ${c.name}`)}
               style={{
                 ...ROW_GRID,
-                alignItems: 'center',
-                padding: '15px 18px',
+                padding: '12px 16px',
                 borderBottom: `1px solid ${C.lineFaint}`,
                 cursor: 'pointer',
                 background: sel?.id === c.id ? C.cardTint : C.card,
                 boxShadow: `inset 2px 0 0 ${sel?.id === c.id ? C.accent : 'transparent'}`,
               }}
             >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
-                <span style={{ fontSize: 14, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {c.name}
-                </span>
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: C.muted,
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }} title={c.name}>
+                <span style={{ fontSize: 13.5, ...CELL }}>{c.name}</span>
+                <span style={{ fontSize: 10.5, color: C.muted, ...CELL }}>
                   {(c.kind || '').split(' · ')[0]} · via {c.referrer}
                 </span>
               </div>
-              <div style={{ fontFamily: mono, fontSize: 12.5 }}>{money(c.amount)}</div>
+              <div style={{ fontFamily: mono, fontSize: 12, ...CELL }}>{money(c.amount)}</div>
               <div
-                style={{
-                  fontSize: 12.5,
-                  color: c.lender ? C.inkSoft : C.dim,
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                }}
+                style={{ fontSize: 12, color: c.lender ? C.inkSoft : C.dim, ...CELL }}
+                title={c.lender || ''}
               >
                 {c.lender || '—'}
               </div>
-              <div>
-                <span style={stageBadge(c.stage)}>{c.stage}</span>
+              <div style={{ minWidth: 0 }}>
+                <span style={{ ...stageBadge(c.stage), ...CELL, maxWidth: '100%' }}>{c.stage}</span>
               </div>
-              <div style={{ fontSize: 12, color: C.muted2 }}>
-                {dateLabel(c.date)} — {c.dateKind}
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}
+                title={`${dateLabel(c.date)} — ${c.dateKind}`}
+              >
+                <span style={{ fontSize: 12, color: C.inkSoft, ...CELL }}>{dateLabel(c.date)}</span>
+                <span style={{ fontSize: 10.5, color: C.muted, ...CELL }}>{c.dateKind}</span>
               </div>
             </div>
           ))}
 
           {!shown.length && (
-            <Empty style={{ padding: '26px 18px' }}>
+            <Empty style={{ padding: '22px 16px' }}>
               {tab === 'active'
                 ? 'No active files yet — add one above to start a pipeline.'
                 : 'Nothing settled yet.'}
