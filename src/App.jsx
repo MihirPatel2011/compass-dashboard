@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { DataProvider, useData, useApi, isFirebaseConfigured } from './lib/data'
+import { AuthProvider, useAuth } from './lib/auth'
+import Login from './components/Login'
 import Sidebar from './components/Sidebar'
 import Modals from './components/Modals'
 import Today from './views/Today'
@@ -23,6 +25,7 @@ const TITLES = {
 function Shell() {
   const d = useData()
   const api = useApi()
+  const { needsAuth, email, signOut } = useAuth()
   const [view, setView] = useState('today')
   const [selId, setSelId] = useState(null)
   const [noteId, setNoteId] = useState(null)
@@ -72,6 +75,7 @@ function Shell() {
             ? `${activeFiles.length} active files · ${openTasks.length} open tasks`
             : 'Nothing in the pipeline yet'
         }
+        account={needsAuth ? { email, signOut } : null}
       />
 
       <main style={{ flex: 1, minWidth: 0, padding: '34px 44px 80px', maxWidth: 1240 }}>
@@ -145,10 +149,44 @@ function Shell() {
   )
 }
 
-export default function App() {
+function Gate() {
+  const { ready, signedIn } = useAuth()
+
+  // Avoid flashing the login screen while Firebase restores the session.
+  if (!ready) {
+    return (
+      <div
+        style={{
+          minHeight: '100vh',
+          background: C.paper,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: mono,
+          fontSize: 10,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase',
+          color: C.muted,
+        }}
+      >
+        Loading
+      </div>
+    )
+  }
+
+  if (!signedIn) return <Login />
+
   return (
     <DataProvider>
       <Shell />
     </DataProvider>
+  )
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <Gate />
+    </AuthProvider>
   )
 }

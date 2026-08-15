@@ -1,7 +1,7 @@
 import { C, serif, mono } from '../lib/theme'
 import { clickable } from './ui'
 
-export default function Sidebar({ view, setView, counts, pipelineValue, pipelineNote }) {
+export default function Sidebar({ view, setView, counts, pipelineValue, pipelineNote, account }) {
   const items = [
     ['today', 'Today', ''],
     ['clients', 'Clients', counts.clients || ''],
@@ -104,6 +104,47 @@ export default function Sidebar({ view, setView, counts, pipelineValue, pipeline
         </div>
         <div style={{ fontSize: 11.5, color: C.darkMuted, lineHeight: 1.5 }}>{pipelineNote}</div>
       </div>
+
+      {account ? (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            paddingLeft: 4,
+            marginTop: -12,
+          }}
+        >
+          <span
+            style={{
+              flex: 1,
+              minWidth: 0,
+              fontSize: 11,
+              color: C.darkMuted,
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+            title={account.email}
+          >
+            {account.email}
+          </span>
+          <span
+            {...clickable(account.signOut, 'Sign out')}
+            style={{
+              fontFamily: mono,
+              fontSize: 9.5,
+              letterSpacing: '0.12em',
+              textTransform: 'uppercase',
+              color: '#c08a5a',
+              cursor: 'pointer',
+              flex: '0 0 auto',
+            }}
+          >
+            Sign out
+          </span>
+        </div>
+      ) : null}
     </aside>
   )
 }

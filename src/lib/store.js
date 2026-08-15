@@ -1,5 +1,5 @@
 import { ref, onValue, update as fbUpdate, remove as fbRemove } from 'firebase/database'
-import { db, isFirebaseConfigured, ROOT } from './firebase'
+import { db, isFirebaseConfigured, rootFor } from './firebase'
 
 // ---------------------------------------------------------------------------
 // A tiny path-based store with two interchangeable backends:
@@ -12,6 +12,14 @@ import { db, isFirebaseConfigured, ROOT } from './firebase'
 // ---------------------------------------------------------------------------
 
 const LS_KEY = 'compass-dashboard'
+
+// Which database branch we are reading and writing. Set once the signed-in user
+// is known, so every write lands under `users/<uid>` — the only path the
+// security rules open up to them.
+let ROOT = rootFor(null)
+export function setRoot(uid) {
+  ROOT = rootFor(uid)
+}
 
 /* ----------------------------- local backend ----------------------------- */
 

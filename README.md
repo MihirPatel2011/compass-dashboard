@@ -14,25 +14,20 @@ Opens on http://localhost:5180.
 
 ## Firebase
 
-Until you add credentials the app runs on a **localStorage store with the same API**,
-so it is fully usable now and nothing changes structurally when you plug Firebase in.
+**[SETUP.md](SETUP.md) is the step-by-step guide** — creating the project, the database,
+the security rules, email/password sign-in, and the GitHub Pages secrets.
 
-1. Create a project → Realtime Database → start in locked mode.
-2. Copy `.env.example` to `.env.local` and fill in the values from
-   Project settings → Your apps → SDK setup.
-3. Restart `npm run dev`. The "local storage mode" line at the bottom of the page
-   disappears once the keys are picked up.
-4. Publish `database.rules.json` (Firebase console → Realtime Database → Rules).
-   It requires auth; if you have not wired sign-in yet, use
-   `".read": true, ".write": true` **only** for local testing.
+Until you add credentials the app runs on a **localStorage store with the same API**, with
+no login required, so it is fully usable before any of that is done.
 
-Everything is stored under one root node (`compass` by default, set by
-`VITE_FIREBASE_ROOT`). To go multi-user later, point that at `users/<uid>`.
+Once configured, the app requires sign-in and each account's data lives under
+`users/<uid>` — the only branch the security rules open up. There is deliberately no
+sign-up form; accounts are created in the Firebase console.
 
 ### Data shape
 
 ```
-compass/
+users/<uid>/            (or `compass/` in local storage mode)
   clients/{id}          name, kind, referrer, amount, stage, date, dateKind,
                         lender, status, rate, lvr, docs, contact, createdAt
                         log/{id}      date, text, ts

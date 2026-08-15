@@ -1,8 +1,13 @@
 {
   "rules": {
-    "compass": {
-      ".read": "auth != null",
-      ".write": "auth != null"
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid"
+      }
     }
   }
 }

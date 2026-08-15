@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app'
 import { getDatabase } from 'firebase/database'
+import { getAuth } from 'firebase/auth'
 
 // ---------------------------------------------------------------------------
 // Firebase config.
@@ -26,13 +27,16 @@ export const isFirebaseConfigured =
   !!firebaseConfig.apiKey && !!firebaseConfig.databaseURL
 
 let database = null
+let authentication = null
 if (isFirebaseConfigured) {
   const app = initializeApp(firebaseConfig)
   database = getDatabase(app)
+  authentication = getAuth(app)
 }
 
 export const db = database
+export const auth = authentication
 
-// Everything lives under one root so a future multi-user setup can swap this
-// for `users/${uid}`.
-export const ROOT = import.meta.env.VITE_FIREBASE_ROOT || 'compass'
+// Each signed-in account owns `users/<uid>`, which is exactly what the security
+// rules grant. Without Firebase the app falls back to a single local root.
+export const rootFor = (uid) => (uid ? `users/${uid}` : 'compass')
