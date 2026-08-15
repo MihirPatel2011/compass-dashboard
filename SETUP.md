@@ -113,13 +113,14 @@ Firebase sends the reset email for you.
 
 ## 6. Run it locally
 
-In the project folder:
+A file called **`.env.local`** already exists in the project folder, waiting for your
+values. Open it in your editor:
 
 ```bash
-cp .env.example .env.local
+open -a TextEdit /Users/mihirpatel/Desktop/Claude/compass-dashboard/.env.local
 ```
 
-Open `.env.local` and paste your values in:
+It starts with an empty slot for each key. Fill them in:
 
 ```
 VITE_FIREBASE_API_KEY=AIza…
@@ -135,6 +136,22 @@ No quotes, no spaces around the `=`. Then:
 
 ```bash
 npm run dev
+```
+
+**If the file seems to be missing:** `.env.local` and `.env.example` start with a dot, so
+macOS hides them — `ls` and Finder won't show them, and neither will most editors' file
+pickers. Use `ls -la` to see them, press `Cmd+Shift+.` in Finder to reveal hidden files, or
+just use the `open` command above. If a command says "No such file or directory", check
+you are in the project folder first:
+
+```bash
+cd /Users/mihirpatel/Desktop/Claude/compass-dashboard
+```
+
+To recreate the file from scratch at any point:
+
+```bash
+cp /Users/mihirpatel/Desktop/Claude/compass-dashboard/.env.example /Users/mihirpatel/Desktop/Claude/compass-dashboard/.env.local
 ```
 
 Restart the dev server if it was already running — Vite only reads env files at startup.
@@ -185,7 +202,8 @@ The GitHub Pages build gets its values from repository secrets.
 | "Email/password sign-in is not enabled…" | Step 5.2 was skipped. |
 | Login works, but the dashboard stays empty and the console shows `PERMISSION_DENIED` | The rules in step 4 weren't published, or they don't match the `users/$uid` shape. |
 | `auth/unauthorized-domain` on the live site | Step 7.3 — add `mihirpatel2011.github.io` to authorised domains. |
-| Still shows "local storage mode" | `.env.local` is missing, misnamed, or in the wrong folder (it belongs next to `package.json`). |
+| Still shows "local storage mode" | `.env.local` is missing, misnamed, or in the wrong folder (it belongs next to `package.json`), or the dev server wasn't restarted. |
+| `cp: .env.example: No such file or directory` | You're not in the project folder. `cd` there first — see the note in step 6. |
 | Data appears under `compass/` instead of `users/…` | That's the local-mode leftover. Once signed in, everything writes under `users/<uid>`. |
 
 ## Moving data you already entered
